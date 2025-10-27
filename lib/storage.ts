@@ -83,7 +83,7 @@ export const storage = {
     if (typeof window === "undefined") return []
     const data = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS)
     return data
-      ? JSON.parse(data).map((t: any) => ({ ...t, date: new Date(t.date), createdAt: new Date(t.createdAt) }))
+      ? JSON.parse(data).map((t: { date: string, createdAt: string }) => ({ ...t, date: new Date(t.date), createdAt: new Date(t.createdAt) }))
       : []
   },
   setTransactions: (transactions: Transaction[]) => {
@@ -107,7 +107,7 @@ export const storage = {
   getBudgets: (): Budget[] => {
     if (typeof window === "undefined") return []
     const data = localStorage.getItem(STORAGE_KEYS.BUDGETS)
-    return data ? JSON.parse(data).map((b: any) => ({ ...b, startDate: new Date(b.startDate) })) : []
+    return data ? JSON.parse(data).map((b: { startDate: string }) => ({ ...b, startDate: new Date(b.startDate) })) : []
   },
   setBudgets: (budgets: Budget[]) => {
     if (typeof window === "undefined") return
@@ -130,7 +130,7 @@ export const storage = {
   getGoals: (): Goal[] => {
     if (typeof window === "undefined") return []
     const data = localStorage.getItem(STORAGE_KEYS.GOALS)
-    return data ? JSON.parse(data).map((g: any) => ({ ...g, deadline: new Date(g.deadline) })) : []
+    return data ? JSON.parse(data).map((g: { deadline: string }) => ({ ...g, deadline: new Date(g.deadline) })) : []
   },
   setGoals: (goals: Goal[]) => {
     if (typeof window === "undefined") return

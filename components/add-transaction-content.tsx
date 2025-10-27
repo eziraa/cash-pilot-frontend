@@ -72,7 +72,7 @@ export function AddTransactionContent({
         ...formData,
         amount: Number.parseFloat(formData.amount),
         user_id: userId,
-        receipt_url: receiptUrl,
+        receipt_url: receiptUrl as unknown as string,
         tags: formData.tags
           .split(",")
           .map((t) => t.trim())

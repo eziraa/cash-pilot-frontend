@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/server"
 
-export async function exportTransactionsCSV() {
+export async function exportTransactionsCSV(): Promise<string> {
   const supabase = await createClient()
   const {
     data: { user },
@@ -20,7 +20,7 @@ export async function exportTransactionsCSV() {
 
   // Convert to CSV
   const headers = ["Date", "Description", "Type", "Amount", "Category", "Account", "Tags"]
-  const rows = transactions.map((t: any) => [
+  const rows = transactions.map((t: { date: string, description: string, type: string, amount: number, category_id: string, account_id: string, tags?: string[] }) => [
     t.date,
     t.description,
     t.type,

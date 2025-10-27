@@ -11,10 +11,11 @@ import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Toolti
 export default function AnalyticsPage() {
   const { transactions, categories, accounts } = useExpenseData()
 
-  const thisMonth = new Date()
-  thisMonth.setDate(1)
+
 
   const monthTransactions = useMemo(() => {
+    const thisMonth = new Date()
+    thisMonth.setDate(1)
     return transactions.filter((t) => new Date(t.date) >= thisMonth)
   }, [transactions])
 
@@ -108,7 +109,7 @@ export default function AnalyticsPage() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, value }) => `${name}: $${value.toFixed(0)}`}
+                      label={({ name, value }) => `${name}: $${(value as unknown as number).toFixed(0)}`}
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="value"
@@ -117,7 +118,7 @@ export default function AnalyticsPage() {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                    <Tooltip formatter={(value) => `$${(value as unknown as number).toFixed(2)}`} />
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -136,7 +137,7 @@ export default function AnalyticsPage() {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                    <Tooltip formatter={(value) => `$${(value as unknown as number).toFixed(2)}`} />
                     <Bar dataKey="balance" fill="#3B82F6" />
                   </BarChart>
                 </ResponsiveContainer>
@@ -157,7 +158,7 @@ export default function AnalyticsPage() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
-                  <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                  <Tooltip formatter={(value) => `$${(value as unknown as number).toFixed(2)}`} />
                   <Bar dataKey="amount" fill="#EF4444" />
                 </BarChart>
               </ResponsiveContainer>

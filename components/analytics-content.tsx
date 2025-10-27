@@ -131,7 +131,7 @@ export function AnalyticsContent({
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, value }) => `${name}: $${value.toFixed(0)}`}
+                    label={({ name, value }) => `${name}: $${(value as unknown as number).toFixed(0)}`}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
@@ -140,7 +140,7 @@ export function AnalyticsContent({
                       <Cell key={`cell-${index}`} fill={`hsl(${index * 60}, 70%, 50%)`} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                  <Tooltip formatter={(value) => `$${(value as unknown as number).toFixed(2)}`} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -161,7 +161,7 @@ export function AnalyticsContent({
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
-                  <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                  <Tooltip formatter={(value) => `$${(value as unknown as number).toFixed(2)}`} />
                   <Bar dataKey="balance" fill="#3b82f6" />
                 </BarChart>
               </ResponsiveContainer>
@@ -183,7 +183,7 @@ export function AnalyticsContent({
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
-                  <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                  <Tooltip formatter={(value) => `$${(value as unknown as number).toFixed(2)}`} />
                   <Line type="monotone" dataKey="amount" stroke="#ef4444" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>

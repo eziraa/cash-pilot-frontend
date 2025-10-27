@@ -59,7 +59,7 @@ export default function SettingsPage() {
               </div>
               <div>
                 <Label htmlFor="account-type">Account Type</Label>
-                <Select value={newAccountType} onValueChange={(value: any) => setNewAccountType(value)}>
+                <Select value={newAccountType} onValueChange={(value: "checking" | "savings") => setNewAccountType(value)}>
                   <SelectTrigger id="account-type">
                     <SelectValue />
                   </SelectTrigger>

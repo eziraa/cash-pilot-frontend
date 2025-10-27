@@ -36,7 +36,6 @@ interface Transaction {
 export function BudgetsContent({
   budgets: initialBudgets,
   categories,
-  transactions,
   userId,
 }: {
   budgets: Budget[]
