@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { BarChart3, Home, Plus, Wallet, Target } from "lucide-react"
+import { BarChart3, Home, Plus, Wallet, Target, Settings, User2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function MobileNav() {
@@ -11,9 +11,10 @@ export function MobileNav() {
   const navItems = [
     { href: "/dashboard", icon: Home, label: "Home" },
     { href: "/dashboard/transactions", icon: Wallet, label: "Transactions" },
-    { href: "/dashboard/add", icon: Plus, label: "Add" },
     { href: "/dashboard/analytics", icon: BarChart3, label: "Analytics" },
     { href: "/dashboard/goals", icon: Target, label: "Goals" },
+    { href: "/dashboard/settings", icon: Settings, label: "Settings" },
+    { href: "/dashboard/accounts", icon: User2, label: "Accounts" },
   ]
 
   return (
