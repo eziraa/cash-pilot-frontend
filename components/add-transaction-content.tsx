@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { createTransaction } from "@/app/actions/transactions"
-import { AlertCircle, Upload } from "lucide-react"
+import { AlertCircle, Plus, Upload } from "lucide-react"
+import AddCategoryDialog from "./add-category"
 
 interface Account {
   id: string
@@ -36,6 +37,7 @@ export function AddTransactionContent({
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [receiptFile, setReceiptFile] = useState<File | null>(null)
+  const [open, setOpen] = useState(false)
   const [formData, setFormData] = useState({
     type: "expense",
     amount: "",
@@ -86,6 +88,7 @@ export function AddTransactionContent({
     }
   }
 
+
   const expenseCategories = categories.filter((c) => c.type === "expense")
   const incomeCategories = categories.filter((c) => c.type === "income")
   const relevantCategories = formData.type === "income" ? incomeCategories : expenseCategories
@@ -93,11 +96,11 @@ export function AddTransactionContent({
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Add Transaction</h1>
+        <h1 className="text-xl font-bold">Add Transaction</h1>
         <p className="text-muted-foreground">Record a new income or expense</p>
       </div>
 
-      <Card>
+      <Card className="shadow-lg border border-accent/50">
         <CardHeader>
           <CardTitle>Transaction Details</CardTitle>
         </CardHeader>
@@ -197,6 +200,8 @@ export function AddTransactionContent({
                   ))}
                 </SelectContent>
               </Select>
+              <Button className="gap-2" onClick={(e) => { e.preventDefault(); setOpen(true); }}><Plus className="w-4 h-4" /> Add Category</Button>
+
             </div>
 
             {/* Tags */}
@@ -244,6 +249,11 @@ export function AddTransactionContent({
           </form>
         </CardContent>
       </Card>
+      <AddCategoryDialog
+        userId={userId}
+        open={open}
+        setOpen={setOpen}
+      />
     </div>
   )
 }
