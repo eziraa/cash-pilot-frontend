@@ -42,12 +42,19 @@ export async function deleteGoal(id: string) {
  * @param id: Goal ID
  * @param data: Fields to update
  */
-export async function updateGoal(id: string, data: { current_amount?: number }) {
+export async function updateGoal(id: string, data: {
+  current_amount?: number
+  target_amount?: number
+  deadline?: string
+  name?: string
+  category?: string
+}) {
   const supabase = await createClient()
 
-  const { error } = await supabase.from("goals").update(data).eq("id", id)
+  const { error, data: updatedGoal } = await supabase.from("goals").update(data).eq("id", id)
 
   if (error) throw new Error(error.message)
+  return updatedGoal
 }
 
 /**

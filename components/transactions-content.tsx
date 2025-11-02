@@ -6,11 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
-import { Plus, Trash2, Search, Download } from "lucide-react"
+import { Plus, Trash2, Search, Download, PenIcon } from "lucide-react"
 import { deleteTransaction } from "@/app/actions/transactions"
 import { exportTransactionsCSV } from "@/app/actions/export"
 import DeleteDialog from "./delete-dialog"
-import { toast } from "sonner"
 import { useAuth } from "@/providers/auth.privider"
 
 interface Account {
@@ -97,8 +96,8 @@ export function TransactionsContent({
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Transactions</h1>
-          <p className="text-muted-foreground">Manage all your transactions</p>
+          <h1 className="text-xl font-bold">Transactions</h1>
+          <p className="text-muted-foreground text-sm">Manage all your transactions</p>
         </div>
         <div className="flex gap-2 w-full md:w-auto">
           <Link href="/dashboard/add" className="flex-1 md:flex-none">
@@ -163,9 +162,9 @@ export function TransactionsContent({
                   >
                     <div className="flex-1">
                       <p className="font-medium">{transaction.description}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         {category?.name || "Uncategorized"} • {account?.name} •{" "}
-                        {new Date(transaction.date).toLocaleDateString()}
+                        {new Date(transaction.date).toDateString()}
                       </p>
                       {transaction.tags && transaction.tags.length > 0 && (
                         <div className="flex gap-1 mt-2 flex-wrap">
@@ -183,29 +182,41 @@ export function TransactionsContent({
                       >
                         {transaction.type === "income" ? "+" : "-"}{transaction.amount.toFixed(2)} {userProfile?.currency ?? 'ETB'}
                       </div>
-                      <DeleteDialog
-                        title="Delete transaction"
-                        open={isDeleting === transaction.id}
-                        onOpenChange={(value) => {
-                          if (!value) {
-                            setIsDeleting(null);
-                          }
-                        }}
-                        trigger={
+                      <div className="flex  flex-1 justify-end">
+                        <Link href={`/dashboard/transactions/${transaction.id}`}>
                           <Button
-                            onClick={() => setIsDeleting(transaction.id)}
                             variant="ghost"
                             size="sm"
-                            disabled={isDeleting === transaction.id}
-                            className="text-destructive"
+                            className="text-muted-foreground"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <PenIcon className="h-4 w-4" />
                           </Button>
-                        }
-                        item={transaction}
-                        onConfirm={handleDeleteTransaction}
-                        itemName={`transaction with id ${transaction.id}`}
-                      />
+                        </Link>
+                        <DeleteDialog
+                          title="Delete transaction"
+                          open={isDeleting === transaction.id}
+                          onOpenChange={(value) => {
+                            if (!value) {
+                              setIsDeleting(null);
+                            }
+                          }}
+                          trigger={
+                            <Button
+                              onClick={() => setIsDeleting(transaction.id)}
+                              variant="ghost"
+                              size="sm"
+                              disabled={isDeleting === transaction.id}
+                              className="text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          }
+                          item={transaction}
+                          onConfirm={handleDeleteTransaction}
+                          itemName={`transaction with id ${transaction.id}`}
+                        />
+
+                      </div>
                     </div>
                   </div>
                 )

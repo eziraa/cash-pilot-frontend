@@ -8,7 +8,7 @@ interface StatCardProps {
     title: string
     value: number
     icon: ReactNode
-    color: "blue" | "green" | "red" | "purple"
+    color: "blue" | "green" | "red" | "purple" | "accent"
     delay?: number
 }
 
@@ -17,6 +17,7 @@ const colorClasses = {
     green: "from-green-600/20 to-green-500/5 border-green-500/50 dark:border-green-900/50",
     red: "from-red-600/20 to-red-500/5 border-red-500/50 dark:border-red-900/50",
     purple: "from-purple-600/20 to-purple-500/5 border-purple-500/50 dark:border-purple-900/50",
+    accent: "from-accent/20 to-accent/5 border-accent/50 dark:border-accent/30",
 }
 
 const textClasses = {
@@ -24,6 +25,7 @@ const textClasses = {
     green: "text-green-600 dark:text-green-400",
     red: "text-red-600 dark:text-red-400",
     purple: "text-purple-600 dark:text-purple-400",
+    accent: "text-accent dark:text-accent/70",
 }
 
 const iconBgClasses = {
@@ -31,6 +33,7 @@ const iconBgClasses = {
     green: "bg-green-200 dark:bg-green-900/30",
     red: "bg-red-200 dark:bg-red-900/30",
     purple: "bg-purple-200 dark:bg-purple-900/30",
+    accent: "bg-accent/10 dark:bg-accent/30",
 }
 
 export function StatCard({ title, value, icon, color, delay = 0 }: StatCardProps) {

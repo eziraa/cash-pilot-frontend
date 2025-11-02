@@ -33,15 +33,16 @@ export interface Transaction {
   amount: number
   currency: Currency
   description: string
-  category: string
+  category_id: string
   tags: string[]
-  accountId: string
+  account_id: string
   toAccountId?: string
   date: Date
   receipt?: string
   notes?: string
   recurring?: RecurrenceType
   createdAt: Date
+  user_id: string
 }
 
 export interface Budget {

@@ -12,6 +12,7 @@ import { createGoal, deleteGoal } from "@/app/actions/goals"
 import { AlertCircle } from "lucide-react"
 import { useAuth } from "@/providers/auth.privider"
 import DeleteDialog from "./delete-dialog"
+import { EditGoalDialog } from "./edit-goal-dialog"
 
 interface Goal {
   id: string
@@ -73,12 +74,12 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Financial Goals</h1>
-        <p className="text-muted-foreground">Track your savings and financial objectives</p>
+        <h1 className="text-xl font-bold">Financial Goals</h1>
+        <p className="text-muted-foreground text-sm">Track your savings and financial objectives</p>
       </div>
 
       {/* Overall Progress */}
-      <Card className="bg-linear-to-r from-primary/10 to-primary/5">
+      <Card className="bg-linear-to-tr from-blue-600/20 via-white to-blue-600/30">
         <CardContent className="pt-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -189,28 +190,39 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
                           </p>
                           {goal.category && <p className="text-sm text-muted-foreground">{goal.category}</p>}
                         </div>
-                        <DeleteDialog
-                          title="Delete Goal"
-                          open={isDeleting === goal.id}
-                          onOpenChange={(value) => {
-                            if (!value) {
-                              setIsDeleting(null);
+                        <div className="flex items-center justify-center">
+                          <EditGoalDialog
+                            goal={goal}
+                            onSuccess={(updatedGoal) => {
+                              setGoals((prev) =>
+                                prev.map((g) => (g.id === updatedGoal.id ? updatedGoal : g))
+                              )
+                            }}
+                          />
+                          <DeleteDialog
+                            title="Delete Goal"
+                            open={isDeleting === goal.id}
+                            onOpenChange={(value) => {
+                              if (!value) {
+                                setIsDeleting(null);
+                              }
+                            }}
+                            trigger={
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setIsDeleting(goal.id)}
+                                disabled={isDeleting === goal.id}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
                             }
-                          }}
-                          trigger={
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setIsDeleting(goal.id)}
-                              disabled={isDeleting === goal.id}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          }
-                          onConfirm={() => handleDeleteGoal(goal)}
-                          item={'goal'}
-                          itemName={`goal with id ${goal.id}`}
-                        />
+                            onConfirm={() => handleDeleteGoal(goal)}
+                            item={'goal'}
+                            itemName={`goal with id ${goal.id}`}
+                          />
+
+                        </div>
                       </div>
                       <div>
                         <div className="flex items-center justify-between mb-2">
