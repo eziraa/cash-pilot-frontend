@@ -34,6 +34,7 @@ export interface Transaction {
   currency: Currency
   description: string
   category_id: string
+  category: string;
   tags: string[]
   account_id: string
   toAccountId?: string
