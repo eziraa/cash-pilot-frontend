@@ -27,10 +27,47 @@ export async function createTransaction(data: {
   return transaction
 }
 
+
+/**
+ * 
+ * Update an existing transaction
+ * @param id: Transaction ID
+ */
 export async function deleteTransaction(id: string) {
   const supabase = await createClient()
 
   const { error } = await supabase.from("transactions").delete().eq("id", id)
 
   if (error) throw new Error(error.message)
+}
+
+/**
+ * 
+ * Update an existing transaction
+ * @param data: Transaction values
+ * @returns updated transaction instance
+ */
+export async function updateTransaction(id: string, data: {
+  id: string
+  user_id: string
+  account_id: string
+  category_id: string
+  type: string
+  amount: number
+  description: string
+  date: string
+  receipt_url?: string
+  tags?: string[]
+}) {
+  const supabase = await createClient()
+
+  const { data: transaction, error } = await supabase
+    .from("transactions")
+    .update(data)
+    .eq("id", data.id)
+    .select()
+    .single()
+
+  if (error) throw new Error(error.message)
+  return transaction
 }
