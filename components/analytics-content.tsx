@@ -16,6 +16,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts"
+import { TrendingUp, TrendingDown, Wallet, PieChartIcon } from "lucide-react"
+import { useEffect, useState } from "react"
 
 interface Transaction {
   id: string
@@ -47,13 +49,21 @@ export function AnalyticsContent({
   accounts: Account[]
 }) {
   const userProfile = useAuth().user?.profiles?.[0]
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
+
   // Category breakdown
-  const categoryData = categories.map((cat) => ({
-    name: cat.name,
-    value: transactions
-      .filter((t) => t.category_id === cat.id && t.type === "expense")
-      .reduce((sum, t) => sum + t.amount, 0),
-  }))
+  const categoryData = categories
+    .map((cat) => ({
+      name: cat.name,
+      value: transactions
+        .filter((t) => t.category_id === cat.id && t.type === "expense")
+        .reduce((sum, t) => sum + t.amount, 0),
+    }))
+    .filter((c) => c.value > 0)
 
   // Daily spending
   const dailyData: { [key: string]: number } = {}
@@ -75,125 +85,268 @@ export function AnalyticsContent({
     balance: acc.balance,
   }))
 
-  // Summary stats
   const totalIncome = transactions.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 0)
   const totalExpenses = transactions.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0)
   const netSavings = totalIncome - totalExpenses
+  const avgDailyExpense = dailyChartData.length > 0 ? totalExpenses / dailyChartData.length : 0
+  const savingsRate = totalIncome > 0 ? ((netSavings / totalIncome) * 100).toFixed(1) : 0
+
+  const colors = ["#06b6d4", "#0ea5e9", "#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#ef4444"]
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Analytics</h1>
-        <p className="text-muted-foreground">Visualize your spending patterns</p>
-      </div>
+    <div className="min-h-screen bg-background p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <div
+          className={`transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+        >
+          <h1 className="text-2xl md:text-5xl font-bold bg-linear-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+            Expense Analytics
+          </h1>
+          <p className="text-muted-foreground text-md mt-2">Track your spending patterns and financial insights</p>
+        </div>
 
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Income</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-green-600">{totalIncome.toFixed(2)} {userProfile?.currency ?? 'ETB'}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Expenses</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-red-600">{totalExpenses.toFixed(2)} {userProfile?.currency ?? 'ETB'}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Net Savings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className={`text-3xl font-bold ${netSavings >= 0 ? "text-green-600" : "text-red-600"}`}>
-              {netSavings.toFixed(2)} {userProfile?.currency ?? 'ETB'}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            {
+              title: "Total Income",
+              value: totalIncome.toFixed(2),
+              icon: TrendingUp,
+              color: "from-emerald-500/20 to-teal-500/20",
+              textColor: "text-emerald-600 dark:text-emerald-400",
+              borderColor: "border-emerald-500/20",
+              delay: "delay-100",
+            },
+            {
+              title: "Total Expenses",
+              value: totalExpenses.toFixed(2),
+              icon: TrendingDown,
+              color: "from-red-500/20 to-orange-500/20",
+              textColor: "text-red-600 dark:text-red-400",
+              borderColor: "border-red-500/20",
+              delay: "delay-200",
+            },
+            {
+              title: "Net Savings",
+              value: netSavings.toFixed(2),
+              icon: Wallet,
+              color: `from-cyan-500/20 to-blue-500/20`,
+              textColor: netSavings >= 0 ? "text-cyan-600 dark:text-cyan-400" : "text-red-600 dark:text-red-400",
+              borderColor: "border-cyan-500/20",
+              delay: "delay-300",
+            },
+            {
+              title: "Savings Rate",
+              value: `${savingsRate}%`,
+              icon: PieChartIcon,
+              color: "from-purple-500/20 to-pink-500/20",
+              textColor: "text-purple-600 dark:text-purple-400",
+              borderColor: "border-purple-500/20",
+              delay: "delay-400",
+            },
+          ].map((stat, idx) => {
+            const Icon = stat.icon
+            return (
+              <div
+                key={idx}
+                className={`transform transition-all duration-1000 ${isVisible ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-8"} ${stat.delay}`}
+              >
+                <Card
+                  className={`backdrop-blur-xl bg-linear-to-br ${stat.color} border ${stat.borderColor} hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 cursor-pointer group`}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
+                      <div className="p-2 rounded-lg bg-background/50 group-hover:bg-background/80 transition-all">
+                        <Icon className={`w-4 h-4 ${stat.textColor}`} />
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className={`text-3xl font-bold ${stat.textColor} tracking-tight`}>
+                      {stat.value}{" "}
+                      <span className="text-sm text-muted-foreground">{userProfile?.currency ?? "ETB"}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )
+          })}
+        </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Expenses by Category */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Expenses by Category</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {categoryData.some((c) => c.value > 0) ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={categoryData.filter((c) => c.value > 0)}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, value }) => `${name}: ${(value as unknown as number).toFixed(0)} ${userProfile?.currency ?? 'ETB'}`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={`hsl(${index * 60}, 70%, 50%)`} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => `${(value as unknown as number).toFixed(2)} ${userProfile?.currency ?? 'ETB'}`} />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">No expense data</div>
-            )}
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Expenses by Category */}
+          <div
+            className={`transition-all duration-1000 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"}`}
+            style={{ transitionDelay: "200ms" }}
+          >
+            <Card className="backdrop-blur-xl bg-linear-to-br from-card/50 to-card/30 border border-cyan-500/10 hover:border-cyan-500/20 transition-all duration-300 overflow-hidden h-full">
+              <CardHeader className="border-b border-cyan-500/10">
+                <CardTitle className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-linear-to-r from-cyan-500 to-blue-500"></div>
+                  Expenses by Category
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6 ">
+                {categoryData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300} className={' flex justify-end'}>
+                    <PieChart>
+                      <Pie
+                        data={categoryData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, value }) => `${name}: ${(value as number).toFixed(0)}`}
+                        outerRadius={90}
+                        fill="#06b6d4"
+                        dataKey="value"
+                        animationBegin={0}
+                        animationDuration={800}
+                        animationEasing="ease-out"
 
-        {/* Account Balances */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Account Balances</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {accountData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={accountData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => `${(value as unknown as number).toFixed(2)} ${userProfile?.currency ?? 'ETB'}`} />
-                  <Bar dataKey="balance" fill="#3b82f6" />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">No accounts</div>
-            )}
-          </CardContent>
-        </Card>
+                      >
+                        {categoryData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(value) => `${(value as number).toFixed(2)} ${userProfile?.currency ?? "ETB"}`}
+                        contentStyle={{
+                          backgroundColor: "var(--card)",
+                          border: "1px solid rgba(6, 182, 212, 0.3)",
+                          borderRadius: "8px",
+                        }}
+                        itemStyle={{
+                          color: "var(--foreground)",
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                    No expense data
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
 
-        {/* Daily Spending Trend */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Daily Spending Trend (Last 30 Days)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {dailyChartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={dailyChartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => `${(value as unknown as number).toFixed(2)} ${userProfile?.currency ?? 'ETB'}`} />
-                  <Line type="monotone" dataKey="amount" stroke="#ef4444" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">No spending data</div>
-            )}
-          </CardContent>
-        </Card>
+          {/* Account Balances */}
+          <div
+            className={`transition-all duration-1000 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"}`}
+            style={{ transitionDelay: "400ms" }}
+          >
+            <Card className="backdrop-blur-xl bg-linear-to-br from-card/50 to-card/30 border border-blue-500/10 hover:border-blue-500/20 transition-all duration-300 overflow-hidden h-full">
+              <CardHeader className="border-b border-blue-500/10">
+                <CardTitle className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-linear-to-r from-blue-500 to-purple-500"></div>
+                  Account Balances
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                {accountData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={accountData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                      <XAxis dataKey="name" stroke="var(--muted-foreground)" />
+                      <YAxis stroke="var(--muted-foreground)" />
+                      <Tooltip
+                        formatter={(value) => `${(value as number).toFixed(2)} ${userProfile?.currency ?? "ETB"}`}
+                        contentStyle={{
+                          backgroundColor: "var(--card)",
+                          border: "1px solid rgba(6, 182, 212, 0.3)",
+                          borderRadius: "8px",
+                        }}
+                        itemStyle={{
+                          color: 'var(--foreground)'
+                        }}
+                      />
+                      <Bar
+                        dataKey="balance"
+                        fill="url(#colorBalance)"
+                        animationBegin={0}
+                        animationDuration={800}
+                        animationEasing="ease-out"
+                        radius={[8, 8, 0, 0]}
+                      />
+                      <defs>
+                        <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3772ef" stopOpacity={0.8} />
+                          <stop offset="95%" stopColor="#598af5" stopOpacity={0.3} />
+                        </linearGradient>
+                      </defs>
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-[300px] flex items-center justify-center text-muted-foreground">No accounts</div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Daily Spending Trend */}
+          <div
+            className={`transition-all duration-1000 lg:col-span-2 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+            style={{ transitionDelay: "600ms" }}
+          >
+            <Card className="backdrop-blur-xl bg-linear-to-br from-card/50 to-card/30 border border-amber-500/10 hover:border-amber-500/20 transition-all duration-300 overflow-hidden">
+              <CardHeader className="border-b border-amber-500/10">
+                <div className="flex items-center flex-col justify-start">
+                  <CardTitle className="flex text-sm font-normal items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-linear-to-r from-amber-500 to-red-500"></div>
+                    Daily Spending Trend (Last 30 Days)
+                  </CardTitle>
+                  <span className="text-xs w-full font-medium text-muted-foreground bg-background/50 px-2 py-1 rounded-full">
+                    Avg: {avgDailyExpense.toFixed(2)} {userProfile?.currency ?? "ETB"}
+                  </span>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-6">
+                {dailyChartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={350}>
+                    <LineChart data={dailyChartData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--muted-foreground)" />
+                      <XAxis dataKey="date" stroke="var(--muted-foreground)" style={{ fontSize: "12px" }} />
+                      <YAxis stroke="var(--muted-foreground)" />
+                      <Tooltip
+                        formatter={(value) => `${(value as number).toFixed(2)} ${userProfile?.currency ?? "ETB"}`}
+                        contentStyle={{
+                          backgroundColor: "var(--card)",
+                          border: "1px solid rgba(6, 182, 212, 0.3)",
+                          borderRadius: "8px",
+                        }}
+                        itemStyle={{
+                          color: 'var(--foreground)'
+                        }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="amount"
+                        stroke="url(#colorGradient)"
+                        strokeWidth={3}
+                        dot={false}
+                        animationBegin={0}
+                        animationDuration={1000}
+                        animationEasing="ease-out"
+                        isAnimationActive={true}
+                      />
+                      <defs>
+                        <linearGradient id="colorGradient" x1="0" y1="0" x2="100%" y2="0">
+                          <stop offset="0%" stopColor="#ef4444" stopOpacity={0.8} />
+                          <stop offset="50%" stopColor="#f59e0b" stopOpacity={0.8} />
+                          <stop offset="100%" stopColor="#eab308" stopOpacity={0.8} />
+                        </linearGradient>
+                      </defs>
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-[350px] flex items-center justify-center text-muted-foreground">
+                    No spending data
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   )

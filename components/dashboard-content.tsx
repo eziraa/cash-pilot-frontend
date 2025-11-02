@@ -196,18 +196,21 @@ export function DashboardContent({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-slide-up" style={{ animationDelay: "300ms" }}>
+      <div
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        style={{ animation: "fade-in-up 0.6s ease-out 0.3s both" }}
+      >
         {/* Daily Spending Chart */}
-        <Card className="shadow-lg border border-accent/50 transition-all duration-300 overflow-hidden group">
-          <div className="absolute inset-0 bg-linear-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <Card className="shadow-md border-accent/40 transition-all duration-300 overflow-hidden group hover:border-accent/70 hover:shadow-lg hover:shadow-accent/10">
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-          <CardHeader className="relative pb-4">
+          <CardHeader className="relative pb-6">
             <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-accent text-lg">Daily Spending</CardTitle>
-                <CardDescription className="text-xs mt-1">Last 7 days overview</CardDescription>
+              <div className="space-y-1">
+                <CardTitle className="text-accent font-bold">Daily Spending</CardTitle>
+                <CardDescription className="text-xs text-muted-foreground">Last 7 days overview</CardDescription>
               </div>
-              <div className="p-2 rounded-lg bg-accent/10">
+              <div className="p-3 rounded-xl bg-accent/15 group-hover:bg-accent/25 transition-all duration-300">
                 <TrendingDown className="h-5 w-5 text-accent" />
               </div>
             </div>
@@ -215,24 +218,31 @@ export function DashboardContent({
 
           <CardContent className="relative">
             {dailySpendingData.some((d) => d.amount > 0) ? (
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={dailySpendingData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="date" stroke="var(--muted-foreground)" />
-                  <YAxis stroke="var(--muted-foreground)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
+                  <XAxis dataKey="date" stroke="var(--muted-foreground)" fontSize={12} />
+                  <YAxis stroke="var(--muted-foreground)" fontSize={12} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "var(--card)",
                       border: "2px solid var(--accent)",
-                      borderRadius: "8px",
+                      borderRadius: "12px",
+                      boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
                     }}
-                    formatter={(value) => [`${(+value).toFixed(2)} ${userProfile?.currency || 'ETB'}`, "Spending"]}
+                    formatter={(value) => [`${(+value).toFixed(2)} ${userProfile?.currency || "ETB"}`, "Spending"]}
                   />
-                  <Bar dataKey="amount" fill="var(--accent)" radius={[8, 8, 0, 0]} isAnimationActive />
+                  <Bar
+                    dataKey="amount"
+                    fill="var(--accent)"
+                    radius={[12, 12, 0, 0]}
+                    isAnimationActive
+                    animationDuration={1000}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[250px] flex items-center justify-center text-muted-foreground">
+              <div className="h-72 flex items-center justify-center text-muted-foreground rounded-lg border-2 border-dashed border-accent/20">
                 No spending data yet
               </div>
             )}
@@ -240,16 +250,16 @@ export function DashboardContent({
         </Card>
 
         {/* Category Breakdown Chart */}
-        <Card className="shadow-lg border border-accent/50 transition-all duration-300 overflow-hidden group">
-          <div className="absolute inset-0 bg-linear-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <Card className="shadow-md border-accent/40 transition-all duration-300 overflow-hidden group hover:border-accent/70 hover:shadow-lg hover:shadow-accent/10">
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-          <CardHeader className="relative pb-4">
+          <CardHeader className="relative pb-6">
             <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-accent text-lg">Expense Categories</CardTitle>
-                <CardDescription className="text-xs mt-1">Spending breakdown</CardDescription>
+              <div className="space-y-1">
+                <CardTitle className="text-accent font-bold">Expense Categories</CardTitle>
+                <CardDescription className="text-xs text-muted-foreground">Spending breakdown</CardDescription>
               </div>
-              <div className="p-2 rounded-lg bg-accent/10">
+              <div className="p-3 rounded-xl bg-accent/15 group-hover:bg-accent/25 transition-all duration-300">
                 <Wallet className="h-5 w-5 text-accent" />
               </div>
             </div>
@@ -257,35 +267,37 @@ export function DashboardContent({
 
           <CardContent className="relative">
             {categoryData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={280}>
                 <PieChart>
                   <Pie
                     data={categoryData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, value }) => `${name}: ${value.toFixed(0)} ${userProfile?.currency || 'ETB'}`}
-                    outerRadius={80}
+                    label={({ name, value }) => `${name}: ${value.toFixed(0)}`}
+                    outerRadius={90}
                     fill="var(--accent)"
                     dataKey="value"
+                    animationDuration={800}
                   >
                     {categoryData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value) => `$${(+value).toFixed(2)}`}
+                    formatter={(value) => `${(+value).toFixed(2)} ${userProfile?.currency || "ETB"}`}
                     contentStyle={{
                       backgroundColor: "var(--card)",
                       border: "2px solid var(--accent)",
-                      borderRadius: "8px",
+                      borderRadius: "12px",
+                      boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
                     }}
                   />
-                  <Legend />
+                  <Legend verticalAlign="bottom" height={36} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[250px] p-10 flex items-center justify-center text-muted-foreground">
+              <div className="h-72 flex items-center justify-center text-muted-foreground rounded-lg border-2 border-dashed border-accent/20">
                 No expense data yet
               </div>
             )}
@@ -294,22 +306,22 @@ export function DashboardContent({
       </div>
 
       <Card
-        className="shadow-lg border border-accent/50 transition-all duration-300 animate-slide-up overflow-hidden group"
-        style={{ animationDelay: "400ms" }}
+        className="shadow-md border-accent/40 transition-all duration-300 overflow-hidden group hover:border-accent/70 hover:shadow-lg hover:shadow-accent/10"
+        style={{ animation: "fade-in-up 0.6s ease-out 0.4s both" }}
       >
-        <div className="absolute inset-0 bg-linear-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         <CardHeader className="relative pb-6">
           <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-accent text-lg">Recent Transactions</CardTitle>
-              <CardDescription className="text-xs mt-1">Your latest activity</CardDescription>
+            <div className="space-y-1">
+              <CardTitle className="text-accent font-bold">Recent Transactions</CardTitle>
+              <CardDescription className="text-xs text-muted-foreground">Your latest activity</CardDescription>
             </div>
             <Link href="/dashboard/transactions">
               <Button
                 variant="outline"
                 size="sm"
-                className="group hover:bg-accent/10 hover:text-accent transition-all bg-transparent"
+                className="group border-accent/50 hover:border-accent hover:bg-accent/10 hover:text-accent transition-all duration-300 bg-transparent"
               >
                 View All
                 <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -319,24 +331,27 @@ export function DashboardContent({
         </CardHeader>
 
         <CardContent className="relative">
-          <div className="space-y-3">
+          <div className="space-y-2">
             {recentTransactions.length > 0 ? (
               recentTransactions.map((transaction, idx) => {
                 const category = categories.find((c) => c.id === transaction.category_id)
                 return (
                   <div
                     key={transaction.id}
-                    className="flex items-center justify-between p-4 rounded-lg border border-border/50 hover:border-accent/50 hover:bg-accent/5 transition-all duration-300 animate-fade-in group/item"
-                    style={{ animationDelay: `${idx * 50 + 450}ms` }}
+                    className="flex items-center justify-between p-4 rounded-xl border border-accent/20 hover:border-accent/50 hover:bg-accent/5 transition-all duration-300 group/item"
+                    style={{ animation: `slide-in-right 0.4s ease-out ${0.45 + idx * 0.05}s both` }}
                   >
                     <div className="flex items-center gap-3 flex-1">
                       <div
-                        className={`p-2.5 rounded-lg ${transaction.type === "income" ? "bg-green-100 dark:bg-green-900/30" : "bg-red-100 dark:bg-red-900/30"}`}
+                        className={`p-2.5 rounded-lg transition-all duration-300 ${transaction.type === "income"
+                          ? "bg-green-500/15 group-hover/item:bg-green-500/25"
+                          : "bg-red-500/15 group-hover/item:bg-red-500/25"
+                          }`}
                       >
                         {transaction.type === "income" ? (
-                          <TrendingUp className="h-4 w-4 text-green-600" />
+                          <TrendingUp className="h-4 w-4 text-green-500" />
                         ) : (
-                          <TrendingDown className="h-4 w-4 text-red-600" />
+                          <TrendingDown className="h-4 w-4 text-red-500" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -347,16 +362,19 @@ export function DashboardContent({
                       </div>
                     </div>
                     <div
-                      className={`font-bold text-sm whitespace-nowrap ml-2 ${transaction.type === "income" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
+                      className={`font-bold text-sm whitespace-nowrap ml-2 transition-colors duration-300 ${transaction.type === "income"
+                        ? "text-green-500 group-hover/item:text-green-400"
+                        : "text-red-500 group-hover/item:text-red-400"
+                        }`}
                     >
                       {transaction.type === "income" ? "+" : "-"}
-                      <AnimatedCounter value={transaction.amount} duration={400} decimals={2} />
+                      <AnimatedCounter value={transaction.amount} duration={500} decimals={2} />
                     </div>
                   </div>
                 )
               })
             ) : (
-              <div className="h-32 flex px-3.5 items-center justify-center text-muted-foreground rounded-lg border-2 border-dashed border-border">
+              <div className="h-32 flex px-3.5 items-center justify-center text-muted-foreground rounded-xl border-2 border-dashed border-accent/20">
                 <p>No transactions yet. Start by adding one!</p>
               </div>
             )}

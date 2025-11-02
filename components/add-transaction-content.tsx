@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { createTransaction } from "@/app/actions/transactions"
 import { AlertCircle, Plus, Upload } from "lucide-react"
 import AddCategoryDialog from "./add-category"
+import { uploadFileToSupabase } from "@/app/actions/files"
 
 interface Account {
   id: string
@@ -63,10 +64,8 @@ export function AddTransactionContent({
       let receiptUrl = null
 
       if (receiptFile) {
-        const reader = new FileReader()
-        receiptUrl = await new Promise((resolve) => {
-          reader.onload = () => resolve(reader.result as string)
-          reader.readAsDataURL(receiptFile)
+        receiptUrl = await uploadFileToSupabase(receiptFile, {
+          makePublic: true,
         })
       }
 
