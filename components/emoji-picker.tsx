@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Smile } from "lucide-react";
 import { useTheme } from "next-themes";
-
+import type { Theme } from "emoji-picker-react";
 // dynamically import the picker to avoid SSR errors
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
@@ -31,7 +31,7 @@ export function EmojiSelector({ value, onChange }: { value?: string; onChange: (
                     width="100%"
                     height="100%"
                     lazyLoadEmojis
-                    theme={theme.theme === "dark" ? "dark" : "light"}
+                    theme={(theme.theme === "dark" ? "dark" : "light") as Theme}
                 />
             </PopoverContent>
         </Popover>
