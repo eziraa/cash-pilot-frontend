@@ -13,14 +13,8 @@ import { createAccount, deleteAccount } from "@/app/actions/accounts"
 import { AlertCircle } from "lucide-react"
 import { useAuth } from "@/providers/auth.privider"
 import DeleteDialog from "./delete-dialog"
-
-interface Account {
-  id: string
-  name: string
-  type: string
-  balance: number
-  currency: string
-}
+import EditAccountDialog from "./edit-account-dialog"
+import { Account } from "@/lib/types"
 
 export function AccountsContent({ accounts: initialAccounts, userId }: { accounts: Account[]; userId: string }) {
   const userProfile = useAuth().user?.profiles?.[0]
@@ -78,9 +72,9 @@ export function AccountsContent({ accounts: initialAccounts, userId }: { account
 
       {/* Total Balance */}
       <Card className="bg-linear-to-r from-primary/10 to-primary/5">
-        <CardContent className="pt-6">
+        <CardContent className="pt-2">
           <p className="text-sm text-muted-foreground mb-2">Total Balance</p>
-          <p className="text-4xl font-bold">{totalBalance.toFixed(2)} {userProfile?.currency || "ETB"}</p>
+          <p className="text-xl font-bold">{totalBalance.toFixed(2)} {userProfile?.currency || "ETB"}</p>
         </CardContent>
       </Card>
 
@@ -153,38 +147,44 @@ export function AccountsContent({ accounts: initialAccounts, userId }: { account
             accounts.map((account) => (
               <Card key={account.id}>
                 <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold">{account.name}</p>
-                      <p className="text-sm text-muted-foreground capitalize">{account.type}</p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        <p className="text-xl font-bold">{account.balance.toFixed(2)}</p>
-                        <p className="text-xs text-muted-foreground">{account.currency}</p>
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold">{account.name}</p>
+                        <p className="text-sm text-muted-foreground capitalize">{account.type}</p>
                       </div>
-                      <DeleteDialog
-                        title="Delete Account"
-                        open={isDeleting === account.id}
-                        onOpenChange={(value) => {
-                          if (!value) {
-                            setIsDeleting(null);
+                      <div className="flex items-center">
+                        <EditAccountDialog
+                          onConfirm={(account: Account) => setAccounts(prev => prev.map(acc => acc.id === account.id ? account : acc))}
+                          account={account}
+                        />
+                        <DeleteDialog
+                          title="Delete Account"
+                          open={isDeleting === account.id}
+                          onOpenChange={(value) => {
+                            if (!value) {
+                              setIsDeleting(null);
+                            }
+                          }}
+                          trigger={
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setIsDeleting(account.id)}
+                              disabled={isDeleting === account.id}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
                           }
-                        }}
-                        trigger={
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setIsDeleting(account.id)}
-                            disabled={isDeleting === account.id}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        }
-                        onConfirm={() => handleDeleteAccount(account.id)}
-                        item={'account'}
-                        itemName={`account with id ${account.id}`}
-                      />
+                          onConfirm={() => handleDeleteAccount(account.id)}
+                          item={'account'}
+                          itemName={`account with id ${account.id}`}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <p className="text-xl font-bold">{account.balance.toFixed(2)}</p>
+                      <p className="text-xs text-muted-foreground">{account.currency}</p>
                     </div>
                   </div>
                 </CardContent>
