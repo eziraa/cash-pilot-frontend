@@ -31,7 +31,7 @@ export function Header() {
       <div className="flex items-center justify-between px-4 py-3 md:px-6">
         <div className="flex">
           <Image src="/logo.png" alt="Logo" width={30} height={30} className="mr-2 rounded-full" />
-          <h1 className="text-xl font-bold text-foreground">
+          <h1 className="text-[18px] font-bold text-foreground">
             Expense Tracker</h1>
         </div>
         <div className="flex items-center gap-2">
