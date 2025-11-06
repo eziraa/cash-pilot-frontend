@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Plus, Trash2, Target } from "lucide-react"
+import { Plus, Trash2, Target, Loader2Icon } from "lucide-react"
 import { createGoal, deleteGoal } from "@/app/actions/goals"
 import { AlertCircle } from "lucide-react"
 import { useAuth } from "@/providers/auth.privider"
@@ -26,7 +26,7 @@ interface Goal {
 export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; userId: string }) {
   const userProfile = useAuth().user?.profiles?.[0]
   const [goals, setGoals] = useState(initialGoals)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
   const [formData, setFormData] = useState({
@@ -38,7 +38,7 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
 
   const handleAddGoal = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
+    setIsCreating(true)
     setError(null)
 
     try {
@@ -52,7 +52,7 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create goal")
     } finally {
-      setIsLoading(false)
+      setIsCreating(false)
     }
   }
 
@@ -119,7 +119,7 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
                   placeholder="e.g., Emergency Fund"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  disabled={isLoading}
+                  disabled={isCreating}
                   required
                 />
               </div>
@@ -132,7 +132,7 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
                   placeholder="0.00"
                   value={formData.target_amount}
                   onChange={(e) => setFormData({ ...formData, target_amount: e.target.value })}
-                  disabled={isLoading}
+                  disabled={isCreating}
                   required
                 />
               </div>
@@ -143,7 +143,7 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
                   type="date"
                   value={formData.deadline}
                   onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                  disabled={isLoading}
+                  disabled={isCreating}
                 />
               </div>
               <div className="space-y-2">
@@ -153,7 +153,7 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
                   placeholder="e.g., Savings"
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  disabled={isLoading}
+                  disabled={isCreating}
                 />
               </div>
               {error && (
@@ -162,8 +162,16 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
                   {error}
                 </div>
               )}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating..." : "Create Goal"}
+              <Button type="submit" className="w-full" disabled={isCreating}>
+                {
+                  isCreating ? (
+                    <>
+                      <Loader2Icon className="animate-spin" /> Creating goal
+                    </>
+                  ) : (
+                    "Create goal"
+                  )
+                }
               </Button>
             </form>
           </CardContent>
