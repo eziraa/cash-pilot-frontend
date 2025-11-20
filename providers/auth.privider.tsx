@@ -1,6 +1,5 @@
 'use client'
 
-import { getLoggedInUser } from "@/app/actions/auth";
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 type Profile = {
@@ -65,14 +64,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setError(null);
 
         try {
-            // replace endpoints with your real API routes
-            const loggedInUser = await getLoggedInUser()
-            setUser(loggedInUser);
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+            const res = await fetch(`${baseUrl}/api/auth/me`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.detail || `Failed to get user (${res.status})`);
+            }
+
+            const apiUser: {
+                id: string;
+                email: string;
+                is_active: boolean;
+                profile: {
+                    id: string;
+                    email: string;
+                    display_name: string | null;
+                    currency: string;
+                } | null;
+            } = await res.json();
+
+            const profileData = apiUser.profile ? [apiUser.profile] : [];
+
+            setUser({
+                id: apiUser.id,
+                email: apiUser.email,
+                profiles: profileData,
+            });
         } catch (err: any) {
             setError(err);
             setUser(null);
+
             // Clear token if auth fails
-            if (err?.message?.includes("401") || err?.message?.includes("Unauthorized") || err?.message?.includes("Not authenticated")) {
+            if (
+                err?.message?.includes("401") ||
+                err?.message?.includes("Unauthorized") ||
+                err?.message?.includes("Not authenticated")
+            ) {
                 removeToken();
             }
         } finally {
