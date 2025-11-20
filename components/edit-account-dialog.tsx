@@ -51,7 +51,7 @@ export default function EditAccountDialog({
             const newAccount = await updateAccount(account.id, {
                 ...formData,
                 balance: Number.parseFloat(formData.balance),
-            })
+            }) as Account
             onConfirm(newAccount)
             setOpen(false)
             setFormData({ name: "", type: "checking", balance: "", currency: userProfile?.currency || "ETB" })

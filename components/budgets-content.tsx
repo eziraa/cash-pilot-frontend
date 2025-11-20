@@ -63,7 +63,7 @@ export function BudgetsContent({
         ...formData,
         limit_amount: Number.parseFloat(formData.limit_amount),
         user_id: userId,
-      })
+      }) as Budget
       setBudgets([...budgets, newBudget])
       setFormData({ category_id: categories[0]?.id || "", limit_amount: "", period: "monthly" })
     } catch (err) {

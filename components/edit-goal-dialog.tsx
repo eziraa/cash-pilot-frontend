@@ -59,7 +59,7 @@ export function EditGoalDialog({ goal, onSuccess }: EditGoalProps) {
                 ...formData,
                 target_amount: Number.parseFloat(formData.target_amount),
                 current_amount: Number.parseFloat(formData.current_amount),
-            })
+            }) as Goal
             if (updatedGoal) {
                 onSuccess(updatedGoal)
             }

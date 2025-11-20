@@ -39,7 +39,7 @@ export function AccountsContent({ accounts: initialAccounts, userId }: { account
         ...formData,
         balance: Number.parseFloat(formData.balance),
         user_id: userId,
-      })
+      }) as Account
       setAccounts([...accounts, newAccount])
       setFormData({ name: "", type: "checking", balance: "", currency: userProfile?.currency || "ETB" })
     } catch (err) {

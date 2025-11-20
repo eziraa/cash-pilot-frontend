@@ -45,8 +45,8 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
       const newGoal = await createGoal({
         ...formData,
         target_amount: Number.parseFloat(formData.target_amount),
-        user_id: userId,
-      })
+        user_id: userId, 
+      }) as Goal
       setGoals([...goals, newGoal])
       setFormData({ name: "", target_amount: "", deadline: "", category: "" })
     } catch (err) {

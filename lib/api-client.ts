@@ -40,13 +40,28 @@ export class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-      ...options.headers,
+    // Use a Headers instance so we can safely call .set() and merge all header shapes
+    const headers = new Headers()
+    // Default content type
+    headers.set("Content-Type", "application/json")
+
+    // Merge provided headers (Headers | string[][] | Record<string, string>)
+    if (options.headers) {
+      if (options.headers instanceof Headers) {
+        options.headers.forEach((value, key) => headers.set(key, value))
+      } else if (Array.isArray(options.headers)) {
+        (options.headers as [string, string][]).forEach(([key, value]) =>
+          headers.set(key, value)
+        )
+      } else {
+        Object.entries(options.headers as Record<string, string>).forEach(([key, value]) =>
+          headers.set(key, value)
+        )
+      }
     }
 
     if (this.token) {
-      headers["Authorization"] = `Bearer ${this.token}`
+      headers.set("Authorization", `Bearer ${this.token}`)
     }
 
     try {
