@@ -37,7 +37,6 @@ export default async function DashboardPage() {
     console.log("Error__________________")
     // If it's an authentication error (401), clear the token and redirect
     if (error?.message?.includes("401") || error?.message?.includes("Unauthorized") || error?.message?.includes("Not authenticated")) {
-      cookieStore.delete("auth_token")
       redirect("/auth/login")
     }
     // For network errors or backend down, show empty state with error message
