@@ -10,6 +10,7 @@ interface AnimatedCounterProps {
     suffix?: string
     decimals?: number
     isCurrency?: boolean
+    className?: string
 }
 
 export function AnimatedCounter({
@@ -19,6 +20,7 @@ export function AnimatedCounter({
     suffix = "",
     decimals = 2,
     isCurrency = true,
+    className = "",
 }: AnimatedCounterProps) {
     const [displayValue, setDisplayValue] = useState(0)
     const userProfile = useAuth().user?.profiles?.[0]
@@ -48,7 +50,7 @@ export function AnimatedCounter({
             {prefix}
             {displayValue.toFixed(decimals)}
             {suffix}
-            {isCurrency && <span className="text-sm"> {userProfile?.currency ?? 'ETB'}</span>}
+            {isCurrency && <span className={`text-sm ${className}`}> {userProfile?.currency ?? 'ETB'}</span>}
         </span>
     )
 }

@@ -21,7 +21,7 @@ export default async function DashboardLayout({
       <Header />
       <main className="px-4 py-6 md:px-6 md:py-4 w-full md:overflow-y-hidden mx-auto pb-24 md:pb-8 flex gap-2   " >
         <DesktopSidebar />
-        <div className="flex-1 px-5 md:min-h-[90vh] py-2.5 md:max-h-[90vh] md:overflow-y-auto bg-card rounded-lg border border-border shadow-sm">
+        <div className="flex-1 px-2.5 md:px-5 md:min-h-[90vh] py-2.5 md:max-h-[90vh] md:overflow-y-auto bg-card rounded-lg border border-border shadow-sm">
           {children}
         </div>
       </main>

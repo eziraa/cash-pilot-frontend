@@ -92,7 +92,7 @@ export function DashboardContent({
 
 
   return (
-    <div className="space-y-8 pb-24 md:pb-8">
+    <div className="space-y-8  px-0.5  pb-24 md:pb-8">
       <div className="relative overflow-hidden shadow-2xl rounded-2xl bg-linear-to-br from-accent/20 via-accent/10 to-transparent border-[0.6px] border-accent/50 p-6 md:p-8 animate-fade-in">
         <div className="absolute inset-0 opacity-20 pointer-events-none">
           <div className="absolute top-0 right-0 w-72 h-72 bg-accent/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
@@ -319,16 +319,19 @@ export function DashboardContent({
         </Card>
       </div>
 
+      {/* Recent Transactions */}
+      <div className="grid grid-cols-1">
+
       <Card
-        className="shadow-md border-accent/40 transition-all duration-300 overflow-hidden group hover:border-accent/70 hover:shadow-lg hover:shadow-accent/10"
+        className="shadow-md max-w-[250px] border-accent/40 transition-all duration-300 px-2.5  group hover:border-accent/70 hover:shadow-lg hover:shadow-accent/10"
         style={{ animation: "fade-in-up 0.6s ease-out 0.4s both" }}
       >
-        <div className="absolute inset-0 bg-linear-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        {/* <div className="absolute inset-0 bg-linear-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" /> */}
 
-        <CardHeader className="relative pb-6">
+        <CardHeader className="relative pb-6 px-2.5">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <CardTitle className="text-accent font-bold">Recent Transactions</CardTitle>
+              <CardTitle className="text-accent font-semibold">Recent Transactions</CardTitle>
               <CardDescription className="text-xs text-muted-foreground">Your latest activity</CardDescription>
             </div>
             <Link href="/dashboard/transactions">
@@ -337,14 +340,14 @@ export function DashboardContent({
                 size="sm"
                 className="group border-accent/50 hover:border-accent hover:bg-accent/10 hover:text-accent transition-all duration-300 bg-transparent"
               >
-                View All
+                <span className="hidden md:inline">View</span> All
                 <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
           </div>
         </CardHeader>
 
-        <CardContent className="relative">
+        <CardContent className="relative flex flex-col justify-start px-2.5">
           <div className="space-y-2">
             {recentTransactions.length > 0 ? (
               recentTransactions.map((transaction, idx) => {
@@ -352,7 +355,7 @@ export function DashboardContent({
                 return (
                   <div
                     key={transaction.id}
-                    className="flex items-center justify-between p-4 rounded-xl border border-accent/20 hover:border-accent/50 hover:bg-accent/5 transition-all duration-300 group/item"
+                    className="flex items-center justify-between p-2 md:p-4 rounded-xl border border-accent/20 hover:border-accent/50 hover:bg-accent/5 transition-all duration-300 group/item"
                     style={{ animation: `slide-in-right 0.4s ease-out ${0.45 + idx * 0.05}s both` }}
                   >
                     <div className="flex items-center gap-3 flex-1">
@@ -363,26 +366,26 @@ export function DashboardContent({
                           }`}
                       >
                         {transaction.type === "income" ? (
-                          <TrendingUp className="h-4 w-4 text-green-500" />
+                          <TrendingUp className=" h-2.5 w-2.5 md:h-4 md:w-4 text-green-500" />
                         ) : (
-                          <TrendingDown className="h-4 w-4 text-red-500" />
+                          <TrendingDown className=" h-2.5 w-2.5 md:h-4 md:w-4 text-red-500" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm group-hover/item:text-accent transition-colors truncate">
+                        <p className="font-semibold text-xs md:text-sm group-hover/item:text-accent transition-colors truncate">
                           {transaction.description}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">{category?.name || "Uncategorized"}</p>
                       </div>
                     </div>
                     <div
-                      className={`font-bold text-sm whitespace-nowrap ml-2 transition-colors duration-300 ${transaction.type === "income"
+                      className={`font-bold text-xs! md:text-sm! whitespace-nowrap ml-2 transition-colors duration-300 ${transaction.type === "income"
                         ? "text-green-500 group-hover/item:text-green-400"
                         : "text-red-500 group-hover/item:text-red-400"
                         }`}
                     >
                       {transaction.type === "income" ? "+" : "-"}
-                      <AnimatedCounter value={transaction.amount} duration={500} decimals={2} />
+                      <AnimatedCounter className={` text-xs! md:text-sm!`} value={transaction.amount} duration={500} decimals={2} />
                     </div>
                   </div>
                 )
@@ -395,6 +398,7 @@ export function DashboardContent({
           </div>
         </CardContent>
       </Card>
+      </div>
 
       <div className="md:hidden fixed bottom-6 right-4 animate-slide-in-up">
         <Link href="/dashboard/add">
